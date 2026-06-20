@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabin Week — July 4–11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dusk:#17363B;
+    --dusk-2:#1F4248;
+    --ember:#E8A33D;
+    --ember-dark:#C2811F;
+    --birch:#F6F1E4;
+    --ink:#23332C;
+    --mist:#BFD8D3;
+    --mist-2:#DCE9E6;
+    --berry:#C1452E;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--birch);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:560px;margin:0 auto;min-height:100vh;background:var(--birch);position:relative;padding-bottom:78px;}
+
+  header.hero{
+    background:linear-gradient(165deg,var(--dusk) 0%, var(--dusk-2) 100%);
+    padding:28px 20px 18px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; right:-40px; top:-40px;
+    width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle, rgba(232,163,61,0.18), transparent 70%);
+  }
+  .eyebrow{
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ember); font-weight:600; margin:0 0 6px;
+  }
+  h1{
+    font-family:'Fraunces',serif; font-weight:650; font-optical-sizing:auto;
+    font-size:34px; color:var(--birch); margin:0 0 8px; line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  .tagline{
+    color:var(--mist); font-size:13.5px; margin:0; line-height:1.5; max-width:42ch;
+  }
+
+  nav.tabs{
+    display:flex; gap:6px; padding:14px 16px 0;
+    background:var(--dusk-2);
+  }
+  nav.tabs button{
+    flex:1; border:none; cursor:pointer;
+    background:rgba(246,241,228,0.08);
+    color:var(--mist);
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13px;
+    padding:10px 6px 12px; border-radius:10px 10px 0 0;
+    transition:background .15s, color .15s;
+  }
+  nav.tabs button.active{
+    background:var(--birch); color:var(--dusk);
+  }
+
+  main{padding:18px 16px 30px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .section-title{
+    font-family:'Fraunces',serif; font-weight:650; font-size:19px;
+    color:var(--dusk); margin:2px 0 4px;
+  }
+  .section-sub{
+    font-size:12.5px; color:#5A6F66; margin:0 0 16px; line-height:1.5;
+  }
+
+  .day-strip{
+    display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:18px;
+    scrollbar-width:none;
+  }
+  .day-strip::-webkit-scrollbar{display:none;}
+  .plank{
+    flex:0 0 auto; min-width:42px;
+    background:var(--dusk); color:var(--birch);
+    border-radius:8px; padding:7px 4px 6px;
+    text-align:center; position:relative;
+  }
+  .plank .dow{display:block; font-size:9.5px; letter-spacing:.06em; color:var(--mist); font-weight:600;}
+  .plank .dnum{display:block; font-family:'Fraunces',serif; font-weight:650; font-size:17px; line-height:1.2;}
+  .plank .count{
+    display:block; font-size:10px; color:var(--ember); font-weight:700; margin-top:1px;
+  }
+
+  .person-row{
+    background:var(--white); border-radius:12px; padding:12px 12px 10px;
+    margin-bottom:10px; box-shadow:0 1px 0 rgba(0,0,0,0.04);
+  }
+  .person-name{
+    font-weight:600; font-size:14.5px; margin-bottom:8px; color:var(--ink);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .remove-person{
+    background:none;border:none;color:#B9A78F;font-size:12px;cursor:pointer;padding:2px 4px;
+  }
+  .day-toggles{display:flex; gap:5px; flex-wrap:wrap;}
+  .day-toggle{
+    flex:0 0 auto; width:36px; height:38px;
+    border-radius:7px; border:1.5px solid var(--mist-2);
+    background:var(--mist-2); color:#5A6F66;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; font-family:'Inter',sans-serif; user-select:none;
+    transition:all .12s;
+  }
+  .day-toggle .t-dow{font-size:8px; font-weight:700; letter-spacing:.03em;}
+  .day-toggle .t-num{font-size:13px; font-weight:700;}
+  .day-toggle.on{
+    background:var(--ember); border-color:var(--ember-dark); color:var(--dusk);
+  }
+
+  .add-row{
+    display:flex; gap:8px; margin-top:14px;
+  }
+  .add-row input{
+    flex:1; border:1.5px solid var(--mist-2); border-radius:9px;
+    padding:11px 12px; font-size:14px; font-family:'Inter',sans-serif;
+    background:var(--white); color:var(--ink);
+  }
+  .add-row input:focus{outline:none; border-color:var(--ember);}
+  .btn{
+    border:none; border-radius:9px; padding:11px 16px;
+    background:var(--ember); color:var(--dusk); font-weight:700; font-size:13.5px;
+    cursor:pointer; white-space:nowrap;
+  }
+  .btn:active{background:var(--ember-dark);}
+
+  .bring-form{
+    background:var(--white); border-radius:12px; padding:14px; margin-bottom:18px;
+  }
+  .bring-form input, .bring-form select{
+    width:100%; border:1.5px solid var(--mist-2); border-radius:9px;
+    padding:11px 12px; font-size:14px; font-family:'Inter',sans-serif;
+    background:var(--white); color:var(--ink); margin-bottom:9px;
+  }
+  .bring-form input:focus, .bring-form select:focus{outline:none; border-color:var(--ember);}
+  .cat-toggle{display:flex; gap:8px; margin-bottom:10px;}
+  .cat-toggle button{
+    flex:1; border:1.5px solid var(--mist-2); background:var(--white);
+    border-radius:9px; padding:9px; font-size:13px; font-weight:600; color:#5A6F66; cursor:pointer;
+  }
+  .cat-toggle button.sel{
+    background:var(--dusk); border-color:var(--dusk); color:var(--birch);
+  }
+  .bring-form .btn{width:100%;}
+
+  .group-label{
+    font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:#8A7A5C; margin:18px 0 8px;
+  }
+  .item-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--white); border-radius:10px; padding:11px 12px; margin-bottom:7px;
+  }
+  .item-row .item-main{font-size:14px; color:var(--ink);}
+  .item-row .item-who{font-size:12px; color:#8A9C94; margin-top:1px;}
+  .item-row .del{background:none; border:none; color:#C9B79A; font-size:17px; cursor:pointer; padding:4px 6px;}
+  .empty-note{font-size:12.5px; color:#9AA89F; padding:6px 2px 0;}
+
+  .meal-card{
+    background:var(--white); border-radius:12px; overflow:hidden; margin-bottom:12px;
+  }
+  .meal-card .plank-head{
+    background:var(--dusk); color:var(--birch); padding:9px 14px;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .meal-card .plank-head .md{font-family:'Fraunces',serif; font-weight:650; font-size:15px;}
+  .meal-fields{padding:10px 14px 12px;}
+  .meal-field{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .meal-field label{width:64px; font-size:11.5px; font-weight:700; color:#8A9C94; text-transform:uppercase; letter-spacing:.04em;}
+  .meal-field input{
+    flex:1; border:none; border-bottom:1.5px solid var(--mist-2);
+    padding:6px 2px; font-size:13.5px; font-family:'Inter',sans-serif; color:var(--ink); background:transparent;
+  }
+  .meal-field input:focus{outline:none; border-color:var(--ember);}
+
+  /* SAVE BAR */
+  .save-bar{
+    position:fixed; bottom:0; left:0; right:0;
+    max-width:560px; margin:0 auto;
+    background:var(--dusk); padding:10px 16px 12px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:0 -4px 14px rgba(0,0,0,0.12);
+    z-index:50;
+  }
+  .save-bar button.save-btn{
+    flex:1; border:none; border-radius:10px; padding:12px;
+    background:var(--ember); color:var(--dusk); font-weight:700; font-size:14px; cursor:pointer;
+  }
+  .save-bar button.save-btn:active{background:var(--ember-dark);}
+  .save-bar .save-hint{color:var(--mist); font-size:10.5px; line-height:1.3; max-width:120px;}
+
+  footer{
+    text-align:center; padding:18px 16px 14px; font-size:11px; color:#9AA89F;
+  }
+  footer a{color:#9AA89F; text-decoration:underline; cursor:pointer; background:none; border:none; font-size:11px;}
+
+  .toast{
+    position:fixed; bottom:78px; left:50%; transform:translateX(-50%);
+    background:var(--dusk); color:var(--birch); padding:9px 16px; border-radius:20px;
+    font-size:12.5px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s;
+    z-index:60; white-space:nowrap;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <p class="eyebrow">July 4 – 11 · 2026</p>
+    <h1>Cabin Week</h1>
+    <p class="tagline">Mark the nights you'll be up, claim what you're bringing, and pencil in the menu.</p>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="here" class="active">Who's Here</button>
+    <button data-tab="bring">Bringing</button>
+    <button data-tab="meals">Meals</button>
+  </nav>
+
+  <main>
+    <section class="panel active" id="panel-here">
+      <p class="section-title">Headcount by night</p>
+      <p class="section-sub">No login needed — this file lives on your device. Tap a day under a name to mark them at the cabin.</p>
+      <div class="day-strip" id="ticker"></div>
+      <div id="people-list"></div>
+      <div class="add-row">
+        <input id="new-person" placeholder="Add a name…" maxlength="24">
+        <button class="btn" id="add-person-btn">Add</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-bring">
+      <p class="section-title">Who's bringing what</p>
+      <p class="section-sub">Claim an item so it doesn't get duplicated.</p>
+      <div class="bring-form">
+        <input id="item-input" placeholder="What are you bringing?" maxlength="60">
+        <input id="who-input" placeholder="Name" list="people-datalist" maxlength="24">
+        <datalist id="people-datalist"></datalist>
+        <div class="cat-toggle">
+          <button data-cat="food" class="sel" id="cat-food">🍽 Food</button>
+          <button data-cat="drink" id="cat-drink">🥤 Drink</button>
+        </div>
+        <button class="btn" id="add-item-btn">Add to list</button>
+      </div>
+      <div id="bring-lists"></div>
+    </section>
+
+    <section class="panel" id="panel-meals">
+      <p class="section-title">The menu</p>
+      <p class="section-sub">Fill in what's planned for each meal — leave blank if it's still TBD.</p>
+      <div id="meals-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    Edit freely — this copy only updates your screen. <a id="reset-link">reset to blank</a>
+  </footer>
+
+  <div class="save-bar">
+    <button class="save-btn" id="save-btn">💾 Save updated copy</button>
+    <span class="save-hint">Downloads a new file — re-send it to the group</span>
+  </div>
+  <div class="toast" id="toast">Saved! Check your downloads.</div>
+</div>
+
+<script type="application/json" id="seed-data">
+{}
+</script>
+
+<script>
+const DATES = [
+  {iso:'2026-07-04', dow:'SAT', num:4},
+  {iso:'2026-07-05', dow:'SUN', num:5},
+  {iso:'2026-07-06', dow:'MON', num:6},
+  {iso:'2026-07-07', dow:'TUE', num:7},
+  {iso:'2026-07-08', dow:'WED', num:8},
+  {iso:'2026-07-09', dow:'THU', num:9},
+  {iso:'2026-07-10', dow:'FRI', num:10},
+  {iso:'2026-07-11', dow:'SAT', num:11},
+];
+const DOW_FULL = {SAT:'Saturday',SUN:'Sunday',MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday'};
+const DEFAULT_PEOPLE = ["Nate","Kyle","Peri","Mom","Dad","Manny","Jane","Isler's","Lucas","Kellee"];
+
+function defaultState(){
+  const attendance = {};
+  DEFAULT_PEOPLE.forEach(p => attendance[p] = DATES.map(()=>false));
+  return { people: DEFAULT_PEOPLE.slice(), attendance, bringing: [], meals: {} };
+}
+
+let state = defaultState();
+let selectedCat = 'food';
+
+function loadSeed(){
+  try{
+    const raw = document.getElementById('seed-data').textContent.trim();
+    const parsed = JSON.parse(raw);
+    if(parsed && parsed.people && parsed.people.length){
+      state = parsed;
+      state.people.forEach(p => { if(!state.attendance[p]) state.attendance[p] = DATES.map(()=>false); });
+      if(!state.bringing) state.bringing = [];
+      if(!state.meals) state.meals = {};
+      return;
+    }
+  }catch(e){ /* fall through to defaults */ }
+  state = defaultState();
+}
+
+function renderAll(){
+  renderTicker();
+  renderPeople();
+  renderDatalist();
+  renderBringing();
+  renderMeals();
+}
+
+function renderTicker(){
+  const el = document.getElementById('ticker');
+  el.innerHTML = '';
+  DATES.forEach((d, i) => {
+    const count = state.people.filter(p => state.attendance[p] && state.attendance[p][i]).length;
+    const plank = document.createElement('div');
+    plank.className = 'plank';
+    plank.innerHTML = `<span class="dow">${d.dow}</span><span class="dnum">${d.num}</span><span class="count">${count}</span>`;
+    el.appendChild(plank);
+  });
+}
+
+function renderPeople(){
+  const el = document.getElementById('people-list');
+  el.innerHTML = '';
+  state.people.forEach(person => {
+    const row = document.createElement('div');
+    row.className = 'person-row';
+    const toggles = DATES.map((d,i) => {
+      const on = state.attendance[person][i];
+      return `<div class="day-toggle ${on?'on':''}" data-person="${person}" data-idx="${i}">
+        <span class="t-dow">${d.dow}</span><span class="t-num">${d.num}</span>
+      </div>`;
+    }).join('');
+    row.innerHTML = `
+      <div class="person-name">${escapeHtml(person)}<button class="remove-person" data-remove="${escapeHtml(person)}">remove</button></div>
+      <div class="day-toggles">${toggles}</div>
+    `;
+    el.appendChild(row);
+  });
+
+  el.querySelectorAll('.day-toggle').forEach(t => {
+    t.addEventListener('click', () => {
+      const person = t.dataset.person;
+      const idx = parseInt(t.dataset.idx, 10);
+      state.attendance[person][idx] = !state.attendance[person][idx];
+      t.classList.toggle('on');
+      renderTicker();
+    });
+  });
+  el.querySelectorAll('.remove-person').forEach(b => {
+    b.addEventListener('click', () => {
+      const name = b.dataset.remove;
+      if(!confirm(`Remove ${name} from the list?`)) return;
+      state.people = state.people.filter(p => p !== name);
+      delete state.attendance[name];
+      renderPeople(); renderTicker(); renderDatalist();
+    });
+  });
+}
+
+function renderDatalist(){
+  const dl = document.getElementById('people-datalist');
+  dl.innerHTML = state.people.map(p => `<option value="${escapeHtml(p)}">`).join('');
+}
+
+function renderBringing(){
+  const el = document.getElementById('bring-lists');
+  el.innerHTML = '';
+  const food = state.bringing.filter(b => b.category === 'food');
+  const drink = state.bringing.filter(b => b.category === 'drink');
+
+  const buildGroup = (label, items) => {
+    let html = `<div class="group-label">${label}</div>`;
+    if(items.length === 0){
+      html += `<p class="empty-note">Nothing claimed yet.</p>`;
+    } else {
+      items.forEach(it => {
+        html += `<div class="item-row">
+          <div><div class="item-main">${escapeHtml(it.item)}</div><div class="item-who">${escapeHtml(it.person)}</div></div>
+          <button class="del" data-del="${it.id}">×</button>
+        </div>`;
+      });
+    }
+    return html;
+  };
+  el.innerHTML = buildGroup('🍽 Food', food) + buildGroup('🥤 Drink', drink);
+
+  el.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.del;
+      state.bringing = state.bringing.filter(it => it.id !== id);
+      renderBringing();
+    });
+  });
+}
+
+function renderMeals(){
+  const el = document.getElementById('meals-list');
+  el.innerHTML = '';
+  DATES.forEach(d => {
+    const m = state.meals[d.iso] || {breakfast:'', lunch:'', dinner:''};
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.innerHTML = `
+      <div class="plank-head"><span class="md">${DOW_FULL[d.dow]}, July ${d.num}</span></div>
+      <div class="meal-fields">
+        <div class="meal-field"><label>Breakfast</label><input data-iso="${d.iso}" data-meal="breakfast" value="${escapeHtml(m.breakfast)}" placeholder="—"></div>
+        <div class="meal-field"><label>Lunch</label><input data-iso="${d.iso}" data-meal="lunch" value="${escapeHtml(m.lunch)}" placeholder="—"></div>
+        <div class="meal-field"><label>Dinner</label><input data-iso="${d.iso}" data-meal="dinner" value="${escapeHtml(m.dinner)}" placeholder="—"></div>
+      </div>
+    `;
+    el.appendChild(card);
+  });
+
+  el.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const iso = inp.dataset.iso, meal = inp.dataset.meal;
+      if(!state.meals[iso]) state.meals[iso] = {breakfast:'', lunch:'', dinner:''};
+      state.meals[iso][meal] = inp.value;
+    });
+  });
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('add-person-btn').addEventListener('click', () => {
+  const input = document.getElementById('new-person');
+  const name = input.value.trim();
+  if(!name) return;
+  if(state.people.includes(name)){ input.value=''; return; }
+  state.people.push(name);
+  state.attendance[name] = DATES.map(()=>false);
+  input.value = '';
+  renderPeople(); renderTicker(); renderDatalist();
+});
+document.getElementById('new-person').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('add-person-btn').click();
+});
+
+document.getElementById('cat-food').addEventListener('click', () => setCat('food'));
+document.getElementById('cat-drink').addEventListener('click', () => setCat('drink'));
+function setCat(cat){
+  selectedCat = cat;
+  document.getElementById('cat-food').classList.toggle('sel', cat==='food');
+  document.getElementById('cat-drink').classList.toggle('sel', cat==='drink');
+}
+
+document.getElementById('add-item-btn').addEventListener('click', () => {
+  const itemInput = document.getElementById('item-input');
+  const whoInput = document.getElementById('who-input');
+  const item = itemInput.value.trim();
+  const who = whoInput.value.trim();
+  if(!item || !who) return;
+  state.bringing.push({id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), item, person: who, category: selectedCat});
+  itemInput.value = ''; whoInput.value = '';
+  renderBringing();
+});
+
+document.getElementById('reset-link').addEventListener('click', () => {
+  if(!confirm('Reset this copy back to the blank starting roster?')) return;
+  state = defaultState();
+  renderAll();
+});
+
+document.getElementById('save-btn').addEventListener('click', () => {
+  const clone = document.documentElement.cloneNode(true);
+  const seedEl = clone.querySelector('#seed-data');
+  seedEl.textContent = JSON.stringify(state);
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `cabin-week-${stamp}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+});
+
+loadSeed();
+renderAll();
+</script>
+</body>
+</html>
